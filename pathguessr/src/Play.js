@@ -1,24 +1,50 @@
 import './Home.css';
 import {Link } from "react-router-dom";
 import L from 'leaflet';
-import { MapContainer, TileLayer, useMap} from 'react-leaflet'
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import 'leaflet/dist/leaflet.css';
+import markerIconPng from "leaflet/dist/images/marker-icon.png"
+import {Icon} from 'leaflet'
+/////////////////////////////////////
 
 function Play() {
 
+  // MAP
+  
   useEffect(() => {
     // Initialize the map
-    var map = L.map('map-container').setView([0, 0], 2);
-
+    var CRSPixel = L.Util.extend(L.CRS.Simple, {
+      transformation: new L.Transformation(1,0,1,0)
+  });
+    var map = L.map('map',{ crs: CRSPixel }).setView([0, 0], 1);
+    var bounds = [[-400,-400], [400,400]];
     // Add the image overlay
-    L.imageOverlay('../images/gondwa.png', [[-90, -180], [90, 180]]).addTo(map);
+    L.imageOverlay('../images/gondwa.png', bounds).addTo(map);
+    map.options.minZoom = 1;
+    map.options.maxZoom = 6;  
 
-    // Set the bounds of the map
-    map.setMaxBounds([[-90, -180], [90, 180]]);
+    const defaultIcon = new L.icon({
+      iconUrl: require('../node_modules/leaflet/dist/images/marker-icon.png'),
+      iconSize: [16, 24],
+      iconAnchor: [8, 24],
+      popupAnchor: [0, -2]
+    });
+
+    L.marker([-65,-180], {icon: defaultIcon}).addTo(map);
+
+
+
+
+
+
+
   }, []);
 
+  const [gameStage, setGameStage] = useState(1);
 
-
+  const Guess = () => {
+  
+  };
 
   return (
     <div className="PlayApp">
@@ -27,8 +53,11 @@ function Play() {
             <div id="play-container">
                 <div id="guess-panel">
                     <img id="logo" src="images/logo.png" alt="PathGuessr"/>
+                    <p>Location: {gameStage}/5</p>
+                    <button id="guessButton" onClick={Guess}>Guess</button>
+                    {gameStage === 5 && <p>DONE</p>}
                 </div>
-                <div id="map-container"></div>
+                <div id="map"></div>
             </div>
         </div>
     </div>
