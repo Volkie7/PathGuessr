@@ -42,8 +42,95 @@ function Play() {
 
   const [gameStage, setGameStage] = useState(1);
 
+
+ //Filename info extraction function
+ function extractFileInfo(filename) {
+  var parts = filename.split(/[xy.]/);
+  var xCoord = parseInt(parts[1], 10);
+  var yCoordPart = parts[2].match(/-?\d+/);
+  var yCoord = parseInt(yCoordPart[0], 10);
+  var regionCode = parts[2].match(/[a-zA-Z]+/);
+  return [xCoord, yCoord, regionCode[0]];
+}
+
+//Region dictionary (to revise)
+  const regionDictionary = {
+    'azure shore': 'AS',
+    'barrens': 'bn',
+    'big quill lake': 'bql',
+    'birchwoods': 'bw',
+    'bleached corals': 'bc',
+    'broken tooth canyon': 'btc',
+    'burned forest': 'bf',
+    'castaway isle': 'ci',
+    'dark woods': 'dw',
+    'deepsea crags': 'dc',
+    'deepsea spires': 'ds',
+    'desolate pass': 'dp',
+    'dried lake': 'dl',
+    'flyers bluff': 'fb',
+    'golden kelp': 'gk',
+    'golden plateau': 'gp',
+    'grand plains': 'gp',
+    'green hills': 'gh',
+    'green valley': 'gv',
+    'hoodoo expanse': 'he',
+    'hot springs': 'hs',
+    'hunters thicket': 'ht',
+    'impact crater': 'ic',
+    'kelp forest': 'kf',
+    'lonely isle': 'li',
+    'the mudflats': 'tm',
+    'ocean pillars': 'op',
+    'ocean stacks': 'os',
+    'pebble isle': 'pi',
+    'rainbow hills': 'rh',
+    'red island': 'ri',
+    'red kelp forest': 'rkf',
+    'red reef': 'rr',
+    'ripple beach': 'rb',
+    'rockfall hill': 'rh',
+    'sanctuary isle': 'si',
+    'sand caverns': 'sc',
+    'salt flats': 'sf',
+    'savanna grassland': 'sg',
+    'seagrass bay': 'sb',
+    'sharptooth marsh': 'sm',
+    'snake gully': 'sg',
+    'stego mountain': 'sm',
+    'sunken hoodoos': 'sh',
+    'sweetwater shallows': 'ss',
+    'the teeth': 'tt',
+    'titan\'s pass': 'tp',
+    'triad falls': 'tf',
+    'volcano bay': 'vb',
+    'wilderness peak': 'wp',
+    'whistling columns': 'wc',
+    'white cliffs': 'wc',
+    'young grove': 'yg'
+};
+
+
+
+
+
+
   const Guess = () => {
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+   
+
   };
 
   return (
