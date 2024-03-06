@@ -68,7 +68,7 @@
 
 
 
-#play-button {
+#play-button, #guess-button {
   margin-top: 10px;
   padding: 8px 16px;
   background-color: rgb(212, 53, 4);
@@ -94,6 +94,11 @@
   width: 1000px;
   height: 100vh;
   border-right: 2px solid rgb(212, 53, 4);
+}
+
+#locP {
+    display: flex;
+    align-items: center;
 }
 
 #map {

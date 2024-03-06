@@ -5,10 +5,13 @@ import { useState, useEffect } from 'react';
 import 'leaflet/dist/leaflet.css';
 import markerIconPng from "leaflet/dist/images/marker-icon.png"
 import {Icon} from 'leaflet'
+import { IoMdPin  } from "react-icons/io";
 /////////////////////////////////////
 
 function Play() {
-
+  const [gameStage, setGameStage] = useState(1);
+  const [guessMode, setGuessMode] = useState(true);
+  const [currentImagePath, setCurrentImagePath] = useState('../images/locations/');
   // MAP
   
   useEffect(() => {
@@ -32,15 +35,15 @@ function Play() {
 
     L.marker([-65,-180], {icon: defaultIcon}).addTo(map);
 
-
-
-
-
-
+    var find = require('list-files');
+    find(function(result) {
+        console.log(result);
+    }, {
+        dir: 'dir',
+        name: 'pdf'
+    });
 
   }, []);
-
-  const [gameStage, setGameStage] = useState(1);
 
 
  //Filename info extraction function
@@ -53,84 +56,68 @@ function Play() {
   return [xCoord, yCoord, regionCode[0]];
 }
 
-//Region dictionary (to revise)
-  const regionDictionary = {
-    'azure shore': 'AS',
-    'barrens': 'bn',
-    'big quill lake': 'bql',
-    'birchwoods': 'bw',
-    'bleached corals': 'bc',
-    'broken tooth canyon': 'btc',
-    'burned forest': 'bf',
-    'castaway isle': 'ci',
-    'dark woods': 'dw',
-    'deepsea crags': 'dc',
-    'deepsea spires': 'ds',
-    'desolate pass': 'dp',
-    'dried lake': 'dl',
-    'flyers bluff': 'fb',
-    'golden kelp': 'gk',
-    'golden plateau': 'gp',
-    'grand plains': 'gp',
-    'green hills': 'gh',
-    'green valley': 'gv',
-    'hoodoo expanse': 'he',
-    'hot springs': 'hs',
-    'hunters thicket': 'ht',
-    'impact crater': 'ic',
-    'kelp forest': 'kf',
-    'lonely isle': 'li',
-    'the mudflats': 'tm',
-    'ocean pillars': 'op',
-    'ocean stacks': 'os',
-    'pebble isle': 'pi',
-    'rainbow hills': 'rh',
-    'red island': 'ri',
-    'red kelp forest': 'rkf',
-    'red reef': 'rr',
-    'ripple beach': 'rb',
-    'rockfall hill': 'rh',
-    'sanctuary isle': 'si',
-    'sand caverns': 'sc',
-    'salt flats': 'sf',
-    'savanna grassland': 'sg',
-    'seagrass bay': 'sb',
-    'sharptooth marsh': 'sm',
-    'snake gully': 'sg',
-    'stego mountain': 'sm',
-    'sunken hoodoos': 'sh',
-    'sweetwater shallows': 'ss',
-    'the teeth': 'tt',
-    'titan\'s pass': 'tp',
-    'triad falls': 'tf',
-    'volcano bay': 'vb',
-    'wilderness peak': 'wp',
-    'whistling columns': 'wc',
-    'white cliffs': 'wc',
-    'young grove': 'yg'
+//Region dictionary
+const regionDictionary = {
+  'azure shore': 'as',
+  'barrens': 'ba',
+  'big quill lake': 'bql',
+  'birchwoods': 'bw',
+  'bleached corals': 'bc',
+  'broken tooth canyon': 'btc',
+  'burned forest': 'bf',
+  'castaway isle': 'ci',
+  'dark woods': 'dw',
+  'deepsea crags': 'dc',
+  'deepsea spires': 'ds',
+  'desolate pass': 'dp',
+  'dried lake': 'dl',
+  'flyers bluff': 'fb',
+  'golden kelp': 'gk',
+  'golden plateau': 'gop',
+  'grand plains': 'gp',
+  'green hills': 'gh',
+  'green valley': 'gv',
+  'hoodoo expanse': 'he',
+  'hot springs': 'hs',
+  'hunters thicket': 'ht',
+  'impact crater': 'ic',
+  'kelp forest': 'kf',
+  'lonely isle': 'li',
+  'the mudflats': 'tm',
+  'ocean pillars': 'op',
+  'ocean stacks': 'os',
+  'pebble isle': 'pi',
+  'rainbow hills': 'rh',
+  'red island': 'ri',
+  'red kelp forest': 'rkf',
+  'red reef': 'rr',
+  'ripple beach': 'rb',
+  'rockfall hill': 'rfh',
+  'sanctuary isle': 'si',
+  'sand caverns': 'sc',
+  'salt flats': 'sf',
+  'savanna grassland': 'sgl',
+  'seagrass bay': 'sb',
+  'sharptooth marsh': 'stm',
+  'snake gully': 'sg',
+  'stego mountain': 'sm',
+  'sunken hoodoos': 'sh',
+  'sweetwater shallows': 'ss',
+  'the teeth': 'tt',
+  'titan\'s pass': 'tp',
+  'triad falls': 'tf',
+  'volcano bay': 'vb',
+  'wilderness peak': 'wp',
+  'whistling columns': 'wco',
+  'white cliffs': 'wc',
+  'young grove': 'yg'
 };
 
 
 
-
-
-
-  const Guess = () => {
-
-
-
-
-
-
-
-
-
-
-
-
-
-   
-
+  const Guess = () => { 
+    if (gameStage<5)
+      setGameStage(gameStage+1);
   };
 
   return (
@@ -140,9 +127,9 @@ function Play() {
             <div id="play-container">
                 <div id="guess-panel">
                     <img id="logo" src="images/logo.png" alt="PathGuessr"/>
-                    <p>Location: {gameStage}/5</p>
-                    <button id="guessButton" onClick={Guess}>Guess</button>
-                    {gameStage === 5 && <p>DONE</p>}
+                    <p id="locP"><IoMdPin color='#d43504' size='30'/>&nbsp;Location: {gameStage}/5</p>
+                    <img src={currentImagePath} width="500px"/>
+                    <button id="guess-button" onClick={Guess}>Guess</button>
                 </div>
                 <div id="map"></div>
             </div>
