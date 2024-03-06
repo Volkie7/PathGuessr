@@ -68,7 +68,7 @@
 
 
 
-#play-button, #guess-button {
+#play-button, #guess-button, #next-button {
   margin-top: 10px;
   padding: 8px 16px;
   background-color: rgb(212, 53, 4);
@@ -92,7 +92,6 @@
   flex-direction: column;
   align-items: center;
   width: 1000px;
-  height: 100vh;
   border-right: 2px solid rgb(212, 53, 4);
 }
 
@@ -119,4 +118,51 @@
 
 .leaflet-bottom.leaflet-right {
   display:none;
+}
+
+/* Home.css */
+.modal {
+  position: fixed;
+  z-index: 9998;
+  left: 0;
+  top: 0;
+  display:flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.modal-content {
+  display: block;
+  position: relative;
+  background-color: rgb(212, 53, 4);
+  padding: 10px;
+  border: 1px solid rgb(163, 41, 4);
+  width: 75%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.close {
+  color: rgb(212, 53, 4);
+  padding: 20px;
+  font-size: 100px;
+  font-weight: bold;
+  position:absolute;
+  top: -50px;
+  left: 90%;
+}
+
+.close:hover,
+.close:focus {
+  color: rgb(163, 41, 4);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#imagePreview {
+  cursor: pointer;
+  border: 5px solid rgb(212, 53, 4);
 }
