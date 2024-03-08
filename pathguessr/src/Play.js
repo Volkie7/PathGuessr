@@ -1,10 +1,8 @@
 import './Home.css';
 import {Link } from "react-router-dom";
-import L, { map } from 'leaflet';
+import L from 'leaflet';
 import { useState, useEffect, useRef } from 'react';
 import 'leaflet/dist/leaflet.css';
-import markerIconPng from "leaflet/dist/images/marker-icon.png"
-import {Icon} from 'leaflet'
 import { IoMdPin  } from "react-icons/io";
 /////////////////////////////////////
 
@@ -13,6 +11,7 @@ function Play() {
   const [guessMode, setGuessMode] = useState(true);
   const [currentImagePath, setCurrentImagePath] = useState('../images/locations/');
   const [currentImageInfo, setCurrentImageInfo] = useState([]);
+  const [markerExists, setMarkerExists] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const mapRef = useRef(null);
@@ -150,7 +149,7 @@ const regionDictionary = {
 function onMapClick(e) {
   var markerCounter = 0;
   var existingMarker = null;
-
+  
   // Count markers and find the existing one
   mapRef.current.eachLayer((layer) => {
       if (layer instanceof L.Marker) {
@@ -165,7 +164,8 @@ function onMapClick(e) {
       existingMarker.dragging.enable();
   } else if (markerCounter === 0) {
       // Create a new draggable marker at the clicked location
-      var guessMarker = L.marker(e.latlng, { draggable: true, icon:defaultIcon }).addTo(mapRef.current);
+      L.marker(e.latlng, { draggable: true, icon:defaultIcon }).addTo(mapRef.current);
+      setMarkerExists(true);
   }
 }
 
@@ -188,9 +188,9 @@ function onMapClick(e) {
     }
     useEffect(() => {
       if (gameStage === 5 && !guessMode) {
-        document.getElementById('totalScore').textContent = "Total Score: " + totalScore;
+        document.getElementById('totalScore').textContent = "Total Score: " + totalScore + " / 500";
       }
-    }, [totalScore, gameStage]);
+    }, [totalScore, gameStage, guessMode]);
 
   const Guess = () => { 
     setGuessMode(false);
@@ -211,9 +211,13 @@ function onMapClick(e) {
             setTotalScore(prevTotalScore => prevTotalScore + score);
             const secondMarkerLatLng = L.latLng(currentImageInfo[0], currentImageInfo[1]);
             const secondMarker = L.marker(secondMarkerLatLng, {icon:defaultIcon}).addTo(mapRef.current);
-            document.getElementById('score').textContent = score;
+            document.getElementById('score').textContent = "Score: "+score;
             const lineCoordinates = [guessMarker.getLatLng(), secondMarker.getLatLng()];
-            const line = L.polyline(lineCoordinates, { color: '#a32904' }).addTo(mapRef.current);
+            var line = L.polyline(lineCoordinates, { color: '#a32904' }).addTo(mapRef.current);
+            var lineBounds = line.getBounds();
+            var pad = 50;
+            var paddedBounds = lineBounds.pad(pad / mapRef.current.getSize().y);
+            mapRef.current.fitBounds(lineBounds);
             console.log("Total Score: ",totalScore);
         }
       });
@@ -232,6 +236,7 @@ function onMapClick(e) {
         mapRef.current.eachLayer(layer => {
             if (layer instanceof L.Polyline || layer instanceof L.Marker) {
                 mapRef.current.removeLayer(layer);
+                setMarkerExists(false);
             }
         });
     }
@@ -246,13 +251,13 @@ function onMapClick(e) {
                 <div id="guess-panel">
                     <img id="logo" src="images/logo.png" alt="PathGuessr"/>
                     <p id="locP"><IoMdPin color='#d43504' size='30'/>&nbsp;Location: {gameStage}/5</p>
-                    <img id="imagePreview" src={currentImagePath} width="600px" onClick={openModal}/>
+                    <img alt="" id="imagePreview" src={currentImagePath} width="600px" onClick={openModal}/>
                     {guessMode && <p><i><small>You can click on the image to enlarge it</small></i></p>}
-                    {guessMode && <button id="guess-button" onClick={Guess}>Guess</button>}
+                    {guessMode && <button id="guess-button" onClick={Guess} disabled={!markerExists}>Guess</button>}
                     {!guessMode && <p> </p>}
                     {!guessMode && <p>The location was in: {regionDictionary[currentImageInfo[2]]}</p>}
                     {!guessMode && gameStage < 5 && <button id="next-button" onClick={Next}>Next</button>}
-                    <p>Score : </p><p id="score"></p>
+                    <p id="score"></p>
                     <p id="totalScore"></p>
                     
                 </div>
@@ -262,7 +267,7 @@ function onMapClick(e) {
         {showModal && (
         <div className="modal">
           <span className="close" onClick={closeModal}>&times;</span>
-          <img className="modal-content" src={currentImagePath} />
+          <img alt="" className="modal-content" src={currentImagePath} />
         </div>
       )}
     </div>
