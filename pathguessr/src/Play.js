@@ -13,6 +13,7 @@ function Play() {
   const [guessMode, setGuessMode] = useState(true);
   const [currentImagePath, setCurrentImagePath] = useState('../images/locations/');
   const [currentImageInfo, setCurrentImageInfo] = useState([]);
+  const [totalScore, setTotalScore] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const mapRef = useRef(null);
   const openModal = () => {
@@ -67,7 +68,7 @@ function Play() {
   
   const getRandomImagePath = () => {
     const images = require.context('../public/images/locations', true);
-    const imagePaths = images.keys();
+    const imagePaths = images.keys().filter(path => !path.includes('./tests'));
     const randomIndex = Math.floor(Math.random() * imagePaths.length);
     const fileName = imagePaths[randomIndex].replace('./', '');
     setCurrentImagePath(`../images/locations/${fileName}`);
@@ -81,11 +82,12 @@ useEffect(() => {
  //Filename info extraction function
  function extractFileInfo(filename) {
   var parts = filename.split(/[xy.]/);
+  console.log(parts);
   var xCoord = parseInt(parts[1], 10);
   var yCoordPart = parts[2].match(/-?\d+/);
   var yCoord = parseInt(yCoordPart[0], 10);
   var regionCode = parts[2].match(/[a-zA-Z]+/);
-  return [xCoord, yCoord, regionCode[0]];
+  return [yCoord/1000, xCoord/1000, regionCode[0]];
 }
 
 // Region dictionary
@@ -174,7 +176,22 @@ function onMapClick(e) {
       const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
       return 10*distance;
     }
-  
+
+    function calculateScore(distance) {
+      if (distance < 20) {
+        return 100;
+    } else if (distance >= 20 && distance <= 2000) {
+        return Math.round(100 - (distance - 20) / 1980 * 100);
+    } else {
+        return 0;
+    }
+    }
+    useEffect(() => {
+      if (gameStage === 5 && !guessMode) {
+        document.getElementById('totalScore').textContent = "Total Score: " + totalScore;
+      }
+    }, [totalScore, gameStage]);
+
   const Guess = () => { 
     setGuessMode(false);
     if (gameStage<6) {
@@ -190,14 +207,18 @@ function onMapClick(e) {
             guessMarker.dragging.disable();
             const markerLatLng = guessMarker.getLatLng();
             let distance = calculateDistance(markerLatLng.lat,markerLatLng.lng,currentImageInfo[0],currentImageInfo[1]);
+            let score = calculateScore(distance);
+            setTotalScore(prevTotalScore => prevTotalScore + score);
             const secondMarkerLatLng = L.latLng(currentImageInfo[0], currentImageInfo[1]);
             const secondMarker = L.marker(secondMarkerLatLng, {icon:defaultIcon}).addTo(mapRef.current);
-            document.getElementById('distance').textContent = distance;
+            document.getElementById('score').textContent = score;
             const lineCoordinates = [guessMarker.getLatLng(), secondMarker.getLatLng()];
             const line = L.polyline(lineCoordinates, { color: '#a32904' }).addTo(mapRef.current);
+            console.log("Total Score: ",totalScore);
         }
       });
-    }  
+    } 
+    
   };
 
   const Next = () => {
@@ -205,7 +226,7 @@ function onMapClick(e) {
       setGuessMode(true);
       getRandomImagePath();
       setGameStage(gameStage+1);
-      document.getElementById('distance').textContent = '';
+      document.getElementById('score').textContent = '';
       if (mapRef.current) {
         mapRef.current.setView([0, 0], 1);
         mapRef.current.eachLayer(layer => {
@@ -231,7 +252,8 @@ function onMapClick(e) {
                     {!guessMode && <p> </p>}
                     {!guessMode && <p>The location was in: {regionDictionary[currentImageInfo[2]]}</p>}
                     {!guessMode && gameStage < 5 && <button id="next-button" onClick={Next}>Next</button>}
-                    <p id="distance">Marker Coordinates: </p>
+                    <p>Score : </p><p id="score"></p>
+                    <p id="totalScore"></p>
                     
                 </div>
                 <div id="map" ref={mapRef}></div>
