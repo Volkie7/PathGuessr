@@ -184,5 +184,10 @@
 
 #score {
   font-size: 15pt;
-  color: rgb(212, 53, 4);;
+  color: rgb(212, 53, 4);
+}
+
+#totalScore {
+  font-size: 15pt;
+  color: rgb(212, 53, 4);
 }
