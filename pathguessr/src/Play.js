@@ -7,6 +7,7 @@ import { IoMdPin  } from "react-icons/io";
 /////////////////////////////////////
 
 function Play() {
+  const [usedPaths, setUsedPaths] = useState([]);
   const [gameStage, setGameStage] = useState(1);
   const [guessMode, setGuessMode] = useState(true);
   const [currentImagePath, setCurrentImagePath] = useState('../images/locations/');
@@ -67,10 +68,16 @@ function Play() {
   
   const getRandomImagePath = () => {
     const images = require.context('../public/images/locations', true);
-    const imagePaths = images.keys().filter(path => !path.includes('./tests'));
+    const imagePaths = images.keys().filter(path => !path.includes('./tests') && !usedPaths.includes(path));
+    if (imagePaths.length === 0) {
+      // If all paths have been used, reset the usedPaths list
+      setUsedPaths([]);
+      return;
+    }
     const randomIndex = Math.floor(Math.random() * imagePaths.length);
     const fileName = imagePaths[randomIndex].replace('./', '');
     setCurrentImagePath(`../images/locations/${fileName}`);
+    setUsedPaths([...usedPaths, imagePaths[randomIndex]]);
     setCurrentImageInfo(extractFileInfo(fileName));
 };
 
@@ -81,7 +88,6 @@ useEffect(() => {
  //Filename info extraction function
  function extractFileInfo(filename) {
   var parts = filename.split(/[xy.]/);
-  console.log(parts);
   var xCoord = parseInt(parts[1], 10);
   var yCoordPart = parts[2].match(/-?\d+/);
   var yCoord = parseInt(yCoordPart[0], 10);
@@ -217,8 +223,7 @@ function onMapClick(e) {
             var lineBounds = line.getBounds();
             var pad = 50;
             var paddedBounds = lineBounds.pad(pad / mapRef.current.getSize().y);
-            mapRef.current.fitBounds(lineBounds);
-            console.log("Total Score: ",totalScore);
+            mapRef.current.fitBounds(paddedBounds);
         }
       });
     } 
@@ -243,6 +248,27 @@ function onMapClick(e) {
     }
   }
 
+  const PlayAgain = () => {
+    if (gameStage===5) {
+      setUsedPaths([]);
+      setGuessMode(true);
+      getRandomImagePath();
+      setTotalScore(prevTotalScore => 0);
+      setGameStage(1);
+      document.getElementById('score').textContent = '';
+      document.getElementById('totalScore').textContent = '';
+      if (mapRef.current) {
+        mapRef.current.setView([0, 0], 1);
+        mapRef.current.eachLayer(layer => {
+            if (layer instanceof L.Polyline || layer instanceof L.Marker) {
+                mapRef.current.removeLayer(layer);
+                setMarkerExists(false);
+            }
+        });
+    }
+    }
+  }
+  
   return (
     <div className="PlayApp">
         <div id="playBody">
@@ -259,6 +285,7 @@ function onMapClick(e) {
                     {!guessMode && gameStage < 5 && <button id="next-button" onClick={Next}>Next</button>}
                     <p id="score"></p>
                     <p id="totalScore"></p>
+                    {!guessMode && gameStage === 5 && <button id="playagain-button" onClick={PlayAgain}>Play Again</button>}
                     
                 </div>
                 <div id="map" ref={mapRef}></div>
