@@ -224,7 +224,6 @@ function onMapClick(e) {
             var pad = 50;
             var paddedBounds = lineBounds.pad(pad / mapRef.current.getSize().y);
             mapRef.current.fitBounds(paddedBounds);
-            console.log("Total Score: ",totalScore);
         }
       });
     } 
@@ -269,7 +268,7 @@ function onMapClick(e) {
     }
     }
   }
-console.log(usedPaths);
+  
   return (
     <div className="PlayApp">
         <div id="playBody">
