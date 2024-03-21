@@ -275,7 +275,7 @@ function onMapClick(e) {
             <div id="top-bar"><h1><Link to="/">PathGuessr</Link></h1></div>
             <div id="play-container">
                 <div id="guess-panel">
-                    <img id="logo" src="images/logo.png" alt="PathGuessr"/>
+                    <Link to="/"><img id="logo" src="images/logo.png" alt="PathGuessr"/></Link>
                     <p id="locP"><IoMdPin color='#d43504' size='30'/>&nbsp;Location: {gameStage}/5</p>
                     <img alt="" id="imagePreview" src={currentImagePath} width="600px" onClick={openModal}/>
                     {guessMode && <p><i><small>You can click on the image to enlarge it</small></i></p>}
